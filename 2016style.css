@@ -1,0 +1,98 @@
+html {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+fieldset {
+	border: 0;
+	display: inline-block;
+}
+
+h1 {
+	padding: 10px 0;
+}
+
+h2 {
+	padding-bottom: 20px;
+}
+
+form > label {
+	margin: 5px 0;
+}
+
+header,
+footer,
+.main-content {
+	padding: 0 20px;
+}
+
+/* aligning state and "back" link with other content */
+#pagecontent header {
+	margin: 0 0 0 20px;
+	}
+
+.main-content {
+	margin: 20px auto;
+}
+
+.map-controls, .map-canvas {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.map-controls {
+	width: 33%;
+}
+
+.map-canvas {
+	width: 66%;
+}
+
+.leaflet-container {
+	min-height: 600px;
+	min-width: 640px;
+}
+
+.hidden {
+	display: none;
+}
+#page {
+    width: 100%;
+    margin: 0 0 0 0;
+}
+
+.map-controls {
+    width: 340px;
+    padding: 0;
+    float: left;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+#map {
+    float: left;
+    padding: 0;
+}
+
+#info {
+    background-color: #fff;
+    transition: background-color 800ms;
+}
+
+#info.active {
+    background-color: #addfff;
+    transition: background-color 600ms;
+}
+
+.map-form-submit {
+    margin-left: 20px;
+}
