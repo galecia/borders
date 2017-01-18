@@ -22,6 +22,7 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
+	box-sizing: border-box;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
@@ -151,14 +152,16 @@ a#selected{
 
 }
 
+#headerbox{
+  display: inline-block;
+  width: 689px;
+}
+
 #statebox{
-  clear: both;
-  float: right;
+  display: inline-block;
   width: 206px;
   color: inherit;
-  padding: .25em .25em 0 0;
-  z-index: 1;
-}  
+}
 
 #statebox label{
   float: left;
