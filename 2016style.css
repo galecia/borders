@@ -96,3 +96,11 @@ footer,
 .map-form-submit {
     margin-left: 20px;
 }
+
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight,
+.ui-widget-header .ui-state-highlight {
+    border-color: #addfff;
+    background-color: #108EBC;
+    color: #fff;
+}

@@ -48,6 +48,7 @@ startRouter();
 function initializeForm() {
 	initializeDateList();
 
+	dateSelect.datepicker();
 	dateSelect.val(utils.getTodaysDate());
 
 	datePager.on('change click', '*', pageDate);

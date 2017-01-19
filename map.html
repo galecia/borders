@@ -6,6 +6,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Atlas of Historical County Boundaries Project" />
 	<meta name="keywords" content="newberry, library, atlas, historical, county, boundaries, shapefiles, gis, kmz, google earth" />
+	<link type="text/css" rel="stylesheet" href="script/jquery-ui.min.css">
 	<link type="text/css" rel="stylesheet" href="2016screen.css" />
 	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css">
 	<link rel="stylesheet" href="2016style.css">
@@ -113,7 +114,7 @@
 
                     <form id="map-controls" name="map-controls">
 			<label for="date-select">Search By Date: </label><br>
-			<input id="date-select" name="date-select" type="date">
+			<input id="date-select" name="date-select" type="text">
 			<button id="date-lookup" class="map-form-submit" type="submit">Go</button>
 			<br><br>
 
@@ -182,6 +183,7 @@
 
 <script src="https://rawgit.com/flatiron/director/master/build/director.min.js"></script>
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="script/jquery-ui.min.js"></script>
 <script src="2016states.js"></script>
 <script src="2016script.js"></script>
 
