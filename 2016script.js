@@ -48,8 +48,13 @@ startRouter();
 function initializeForm() {
 	initializeDateList();
 
-	dateSelect.datepicker();
-	dateSelect.val(utils.getTodaysDate());
+	dateSelect.datepicker({
+	  changeMonth: true,
+	  changeYear: true,
+	  constrainInput: true,
+	  dateFormat: "yy-mm-dd"
+	});
+	dateSelect.val(utils.getDate());
 
 	datePager.on('change click', '*', pageDate);
 
@@ -71,6 +76,10 @@ function initializeDateList() {
   var initialDateOption = $('<option value="initial">-- View Border Changes --</option>');
   dateList.empty();
   dateList.append(initialDateOption);
+
+  dateList.on('change', function (event) {
+    dateSelect.val(event.target.value);
+  });
 }
 
 function initializeInfo() {
@@ -132,7 +141,7 @@ function mapsMainPage() {
 
 function loadStateMap(state) {
 	var stateName = statesList[state];
-	var dateListQuery = 'SELECT DISTINCT ON (start_date) start_date, to_char(start_date, \'MM-DD-YYYY\') date FROM us_histcounties_gen001 WHERE state_terr ILIKE \'\%' + stateName + '\%\' ORDER BY start_date ASC';
+	var dateListQuery = 'SELECT DISTINCT ON (start_date) start_date, to_char(start_date, \'YYYY-MM-DD\') date FROM us_histcounties_gen001 WHERE state_terr ILIKE \'\%' + stateName + '\%\' ORDER BY start_date ASC';
 	var getDateList = $.getJSON(encodeURI('https://newberrydis.cartodb.com/api/v2/sql/?q=' + dateListQuery));
 
 	homeLink.removeClass('hidden');
@@ -179,6 +188,7 @@ function pageDate(event) {
 			return;
 		}
 
+		dateSelect.val(bumperVal);
 		getLayersForDate(bumperVal, state);
 	}
 }
@@ -205,22 +215,25 @@ function populateDateList(data) {
 	initializeDateList();
 	$.each(data.rows, function(key, val) {
 		var dateOption = $('<option value="' + val.date + '">' + val.date + '</option>');
-		var formattedDate, year;
 
 		dateList.append(dateOption);
-
-		if (key === 1) {
-			year = val.date.split('-').pop();
-			dateSelect.val(year + '-01-01');
-		}
 	});
 }
 
 function setInitialLayer(state) {
 	return function(data) {
-		var date = data.rows.shift().start_date;
+		var firstRow = data.rows.slice(0, 1)[0];
+		var lastRow = data.rows.slice(-1)[0];
+		var firstYear = firstRow.date.split('-')[0];
+		var lastYear = lastRow.date.split('-')[0];
 
-		getLayersForDate(date, state, true);
+		dateSelect.datepicker('option', 'maxDate', lastRow.date);
+		dateSelect.datepicker('option', 'minDate', firstRow.date);
+		dateSelect.datepicker('option', 'yearRange', firstYear + ':' + lastYear);
+
+		dateSelect.val(firstRow.date);
+
+		getLayersForDate(firstRow.start_date, state, true);
 	}
 }
 
@@ -324,8 +337,8 @@ function Utils() {
 		getHash: function() {
 			return window.location.hash.replace(/^[#\/]+/, '');
 		},
-		getTodaysDate: function() {
-			var today = new Date();
+		getDate: function(datestamp) {
+			var today = new Date(datestamp);
 			var month = initialZero(today.getMonth() + 1);
 			var date = initialZero(today.getDate());
 			var todaysDate = today.getFullYear()+'-'+month+'-'+date;
