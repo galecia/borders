@@ -158,7 +158,7 @@ a#selected{
 }
 
 #statebox{
-  display: inline-block;
+  display: inline-block !important;
   width: 206px;
   color: inherit;
 }
