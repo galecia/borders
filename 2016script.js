@@ -141,8 +141,17 @@ function mapsMainPage() {
 
 function loadStateMap(state) {
 	var stateName = statesList[state];
-	var dateListQuery = 'SELECT DISTINCT ON (start_date) start_date, to_char(start_date, \'YYYY-MM-DD\') date FROM us_histcounties_gen001 WHERE state_terr ILIKE \'' + stateName + '\%\' ORDER BY start_date ASC';
-	var getDateList = $.getJSON(encodeURI('https://newberrydis.cartodb.com/api/v2/sql/?q=' + dateListQuery));
+	var dateListQuery = 'SELECT DISTINCT ON (start_date) start_date, to_char(start_date, \'YYYY-MM-DD\') date FROM us_histcounties_gen001 WHERE state_terr ';
+
+	// The fix to the ILIKE statement took care of KS/AR and VA/WV discrepancies
+	// however, it filtered out "District of Louisiana", so a fix for this is below
+	if (state === 'LA') {
+		dateListQuery += '~* \' ?' + stateName + '.*\'';
+	} else {
+		dateListQuery += 'ILIKE \'' + stateName + '\%\'';
+	}
+
+	dateListQuery += ' ORDER BY start_date ASC';
 
 	homeLink.removeClass('hidden');
 	stateLink.removeClass('hidden');
@@ -157,7 +166,7 @@ function loadStateMap(state) {
 
 	initializeInfo();
 
-	getDateList
+	$.getJSON(encodeURI('https://newberrydis.cartodb.com/api/v2/sql/?q=' + dateListQuery))
 		.done(populateDateList)
 		.done(setInitialLayer(state));
 }
@@ -239,8 +248,18 @@ function setInitialLayer(state) {
 
 function getLayersForDate(date, state, initialLayer) {
 	var stateName = statesList[state];
-	var layerQuery = 'SELECT ST_AsGeoJSON(the_geom) as geo, full_name, change, start_date, end_date FROM us_histcounties_gen001 WHERE state_terr ILIKE \'' + stateName + '\%\' AND start_date <= \'' + date + '\' AND end_date >= \'' + date + '\'';
+	var layerQuery = 'SELECT ST_AsGeoJSON(the_geom) as geo, full_name, change, start_date, end_date FROM us_histcounties_gen001 WHERE state_terr ';
 	var resizeLayer = initialLayer || !userFocused;
+
+	// The fix to the ILIKE statement took care of KS/AR and VA/WV discrepancies
+	// however, it filtered out "District of Louisiana", so a fix for this is below
+	if (state === 'LA') {
+		layerQuery += '~* \' ?' + stateName + '.*\'';
+	} else {
+		layerQuery += 'ILIKE \'' + stateName + '\%\'';
+	}
+
+	layerQuery += ' AND start_date <= \'' + date + '\' AND end_date >= \'' + date + '\'';
 
 	layerChangeZooming = true;
 
