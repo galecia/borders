@@ -20,6 +20,7 @@ var basemap = new L.tileLayer(baseMapUrl, {
 });
 var mapOpts = {
   center: [39, -97],
+  fullscreenControl: true,
   scrollWheelZoom: false,
   zoom: 4
 };
