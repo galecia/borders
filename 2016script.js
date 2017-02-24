@@ -33,6 +33,8 @@ var activeLayer = [];
 var layerChangeZooming = false;
 var userFocused = false;
 
+L.easyPrint().addTo(map);
+
 map.addLayer(basemap);
 
 map.on('dragstart zoomstart', function(event) {
