@@ -78,17 +78,12 @@ footer,
     margin-left: 20px;
 }
 
-#map {
-    float: left;
-    padding: 0;
-}
-
-#info {
+.border-info-box {
     background-color: #fff;
     transition: background-color 800ms;
 }
 
-#info.active {
+.border-info-box.active {
     background-color: #addfff;
     transition: background-color 600ms;
 }

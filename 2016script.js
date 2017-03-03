@@ -32,6 +32,59 @@ var router = new Router({
 var activeLayer = [];
 var layerChangeZooming = false;
 var userFocused = false;
+var info = L.control({
+	position: 'bottomleft'
+});
+
+info.onAdd = function () {
+  this._div = L.DomUtil.create('div', 'border-info-box');
+  var contents = []
+  var nameLabel = L.DomUtil.create('h4', '');
+  nameLabel.textContent = 'County/Region:';
+  var datesLabel = L.DomUtil.create('h4', '');
+  datesLabel.textContent = 'Effective Dates:';
+  var changeLabel = L.DomUtil.create('h4', '');
+  changeLabel.textContent = 'Description of Border Change:';
+
+  contents.push(nameLabel, L.DomUtil.create('p', 'name'), L.DomUtil.create('br', ''),
+		datesLabel, L.DomUtil.create('p', 'dates'), L.DomUtil.create('br', ''),
+		changeLabel, L.DomUtil.create('p', 'change'));
+
+  contents.forEach(function (el) {
+	this._div.appendChild(el);
+  }.bind(this));
+
+  this.update();
+
+  return this._div;
+};
+info.update = function (data) {
+	var info = $(this._div);
+
+	if (!data) {
+		info.children('.name').text('');
+		info.children('.dates').text('');
+		info.children('.change').text('No region selected.');
+	} else {
+		if (info.children('.name').text() !== data.fullName) {
+			var startDate = new Date(data.dates.start),
+				start = startDate.toDateString(),
+				endDate = new Date(data.dates.end),
+				end = endDate.toDateString();
+
+			info.addClass('active');
+			setTimeout(function() {
+				info.removeClass('active');
+			}, 200);
+
+			info.children('.name').text(data.fullName);
+			info.children('.dates').text(start + ' - ' + end);
+			info.children('.change').text(data.change);
+		}
+	}
+};
+
+info.addTo(map);
 
 L.easyPrint().addTo(map);
 
@@ -44,7 +97,6 @@ map.on('dragstart zoomstart', function(event) {
 });
 
 initializeForm();
-initializeInfo();
 startRouter();
 
 // Set up initial form values and event handlers for form changes
@@ -85,13 +137,6 @@ function initializeDateList() {
   });
 }
 
-function initializeInfo() {
-  var info = $('#info');
-  info.children('.name').text('');
-  info.children('.dates').text('');
-  info.children('.change').text('No region selected.');
-}
-
 // initialize the router
 function startRouter() {
 	// make sure the url has a hash so the router doesn't break
@@ -120,7 +165,7 @@ function mapsMainPage() {
 
 	title.text('Maps');
 
-	initializeInfo();
+	info.onAdd();
 
 	initializeDateList();
 	datePager.attr('disabled', true);
@@ -167,7 +212,7 @@ function loadStateMap(state) {
 	dateSelect.removeAttr('disabled');
 	datePager.removeAttr('disabled');
 
-	initializeInfo();
+	info.onAdd();
 
 	$.getJSON(encodeURI('https://newberrydis.cartodb.com/api/v2/sql/?q=' + dateListQuery))
 		.done(populateDateList)
@@ -279,7 +324,7 @@ function getLayersForDate(date, state, initialLayer) {
 						event.target.setStyle({
 							fillColor: '#0099ff'
 						});
-						populateInfo(feature.properties);
+						info.update(feature.properties);
 					}, 50));
 				}
 			});
@@ -331,24 +376,7 @@ function getFeatureFromData(data) {
 	return feature;
 }
 
-function populateInfo(data) {
-	var info = $('#info');
-	if (info.children('.name').text() !== data.fullName) {
-		var startDate = new Date(data.dates.start),
-			start = startDate.toDateString(),
-			endDate = new Date(data.dates.end),
-			end = endDate.toDateString();
 
-		info.addClass('active');
-		setTimeout(function() {
-			info.removeClass('active');
-		}, 200);
-
-		info.children('.name').text(data.fullName);
-		info.children('.dates').text(start + ' - ' + end);
-		info.children('.change').text(data.change);
-	}
-}
 
 /**
  * Utilities
