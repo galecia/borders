@@ -9,7 +9,6 @@ html {
 	box-sizing: inherit;
 	margin: 0;
 	padding: 0;
-	position: relative;
 }
 
 fieldset {
@@ -44,22 +43,20 @@ footer,
 	margin: 20px auto;
 }
 
-.map-controls, .map-canvas {
-	display: inline-block;
-	vertical-align: top;
+.map-container {
+    margin: 0;
+    width: 66%;
+    padding: 0;
 }
 
-.map-controls {
-	width: 33%;
+.map-controls, .map-container {
+    display: inline-block;
+    vertical-align: top;
 }
 
 .map-canvas {
-	width: 66%;
-}
-
-.leaflet-container {
-	min-height: 600px;
-	min-width: 640px;
+    height: 600px;
+    min-width: 640px;
 }
 
 .hidden {
@@ -71,15 +68,33 @@ footer,
 }
 
 .map-controls {
-    width: 340px;
+    width: 30%;
     padding: 0;
-    float: left;
-    margin-right: 20px;
-    margin-left: 20px;
+    margin: 0 1%;
+}
+
+.timeline {
+    border: 2px solid #108EBC;
+    height: 300px;
+    overflow: scroll;
+    padding: 5px;
+    width: 50%;
+}
+
+.timeline li {
+    cursor: pointer;
+}
+
+.timeline .selected {
+    background-color: #addfff;
 }
 
 .border-info-box {
     background-color: #fff;
+    border: 2px solid #108EBC;
+    max-width: 300px;
+    min-height: 300px;
+    padding: 5px 15px;
     transition: background-color 800ms;
 }
 
