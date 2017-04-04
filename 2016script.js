@@ -5,10 +5,9 @@ var homeLink = $('#home');
 var title = $('#page-title');
 var stateLink = $('#state-detail-link');
 var stateLinkName = $('#breadcrumb-state-name');
-var dateList = $('#date-list');
 var dateSelect = $('#date-select');
-var datePager = $('#date-pager');
 var dateLookup = $('#date-lookup');
+var dateTimeline = $('#date-timeline ul');
 var hash = utils.getHash(); // this may have to be changed for production
 
 // Jim: update this URL/attribution string if you need
@@ -32,6 +31,9 @@ var router = new Router({
 var activeLayer = [];
 var layerChangeZooming = false;
 var userFocused = false;
+var info = L.infoBox();
+
+info.addTo(map);
 
 L.easyPrint().addTo(map);
 
@@ -44,12 +46,11 @@ map.on('dragstart zoomstart', function(event) {
 });
 
 initializeForm();
-initializeInfo();
 startRouter();
 
 // Set up initial form values and event handlers for form changes
 function initializeForm() {
-	initializeDateList();
+	dateTimeline.empty()
 
 	dateSelect.datepicker({
 	  changeMonth: true,
@@ -58,8 +59,6 @@ function initializeForm() {
 	  dateFormat: "yy-mm-dd"
 	});
 	dateSelect.val(utils.getDate());
-
-	datePager.on('change click', '*', pageDate);
 
 	dateSelect.on('keydown', function (event) {
 		if (event.keyCode === 13) {
@@ -73,23 +72,15 @@ function initializeForm() {
 
 	  updateDate(dateSelect.val());
 	});
-}
 
-function initializeDateList() {
-  var initialDateOption = $('<option value="initial">-- View Border Changes --</option>');
-  dateList.empty();
-  dateList.append(initialDateOption);
+	dateTimeline.on('click', 'li', function (event) {
+	  event.preventDefault();
 
-  dateList.on('change', function (event) {
-    dateSelect.val(event.target.value);
-  });
-}
+	  var date = $(this).data('date');
 
-function initializeInfo() {
-  var info = $('#info');
-  info.children('.name').text('');
-  info.children('.dates').text('');
-  info.children('.change').text('No region selected.');
+	  setDate(date);
+	  updateDate(date);
+	});
 }
 
 // initialize the router
@@ -120,11 +111,9 @@ function mapsMainPage() {
 
 	title.text('Maps');
 
-	initializeInfo();
+	info.update();
 
-	initializeDateList();
-	datePager.attr('disabled', true);
-	datePager.attr('disabled', 'disabled');
+	dateTimeline.empty();
 
 	if (activeLayer.length) {
 		activeLayer = activeLayer.reduce(function(empty, layer) {
@@ -165,9 +154,8 @@ function loadStateMap(state) {
 	stateLink.attr('href', '../pages/' + stateName.replace(' ', '_') + '.html');
 
 	dateSelect.removeAttr('disabled');
-	datePager.removeAttr('disabled');
 
-	initializeInfo();
+	info.update();
 
 	$.getJSON(encodeURI('https://newberrydis.cartodb.com/api/v2/sql/?q=' + dateListQuery))
 		.done(populateDateList)
@@ -177,33 +165,6 @@ function loadStateMap(state) {
 /**
  * Events
  */
-
-function pageDate(event) {
-	event.preventDefault();
-
-	var val = event.target.value.trim();
-	var fromList = !!parseInt(val, 10);
-	var selectedEl = dateList.find('option[value="' + dateList.val() + '"]');
-	var state = utils.getHash();
-	var bumperVal;
-
-	if (fromList) {
-		getLayersForDate(val, state);
-	} else if (val === 'initial') {
-		return;
-	} else {
-		bumperVal = selectedEl[val]().val();
-
-		dateList.val(bumperVal);
-
-		if (bumperVal === 'initial' || typeof bumperVal === 'undefined') {
-			return;
-		}
-
-		dateSelect.val(bumperVal);
-		getLayersForDate(bumperVal, state);
-	}
-}
 
 function updateDate(date) {
 	var state = utils.getHash();
@@ -224,11 +185,12 @@ function viewState(event) {
  */
 
 function populateDateList(data) {
-	initializeDateList();
-	$.each(data.rows, function(key, val) {
-		var dateOption = $('<option value="' + val.date + '">' + val.date + '</option>');
+	dateTimeline.empty();
 
-		dateList.append(dateOption);
+	$.each(data.rows, function(key, val) {
+		var date = $('<li data-date="' + val.date + '">' + val.date + '</li>');
+
+		dateTimeline.append(date);
 	});
 }
 
@@ -245,8 +207,17 @@ function setInitialLayer(state) {
 
 		dateSelect.val(firstRow.date);
 
+		setDate(firstRow.date);
+
 		getLayersForDate(firstRow.start_date, state, true);
 	}
+}
+
+function setDate(date) {
+	var child = dateTimeline.children('[data-date="' + date + '"]');
+
+	dateTimeline.children().removeClass('selected');
+	child.addClass('selected');
 }
 
 function getLayersForDate(date, state, initialLayer) {
@@ -279,7 +250,7 @@ function getLayersForDate(date, state, initialLayer) {
 						event.target.setStyle({
 							fillColor: '#0099ff'
 						});
-						populateInfo(feature.properties);
+						info.update(feature.properties);
 					}, 50));
 				}
 			});
@@ -331,24 +302,7 @@ function getFeatureFromData(data) {
 	return feature;
 }
 
-function populateInfo(data) {
-	var info = $('#info');
-	if (info.children('.name').text() !== data.fullName) {
-		var startDate = new Date(data.dates.start),
-			start = startDate.toDateString(),
-			endDate = new Date(data.dates.end),
-			end = endDate.toDateString();
 
-		info.addClass('active');
-		setTimeout(function() {
-			info.removeClass('active');
-		}, 200);
-
-		info.children('.name').text(data.fullName);
-		info.children('.dates').text(start + ' - ' + end);
-		info.children('.change').text(data.change);
-	}
-}
 
 /**
  * Utilities
