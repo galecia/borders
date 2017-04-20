@@ -132,6 +132,13 @@ a#selected{
   font-weight: bold;
 }
 
+#header h1 a {
+	color:#ffffff;
+}
+#header h1 a:hover{
+  color: #108EBC;
+}
+
 #header ul {
   padding: 0em .1em .5em .25em;
 }
@@ -152,6 +159,7 @@ a#selected{
 
 }
 
+/*
 #headerbox{
   display: inline-block;
   width: 689px;
@@ -162,6 +170,17 @@ a#selected{
   width: 206px;
   color: inherit;
 }
+*/
+#statebox{
+  clear: both;
+  float: right;
+  width: 206px;
+  color: inherit;
+  padding: .25em .25em 0 0;
+  margin-top:.75em;
+  display: none;
+}  
+
 
 #statebox label{
   float: left;
@@ -170,13 +189,14 @@ a#selected{
   padding-bottom: 0;
   vertical-align: top;
   line-height: 1.5em;
+  display:none;
 }
 
 #statebox select{
   clear: both;
   float: left;
   margin-top: 0;
-  margin-left: .5em;
+  /*margin-left: .5em;*/
   width: 154px;
   border: 1px solid #000;
   background-color: #fff;
@@ -194,6 +214,7 @@ a#selected{
   margin-top: 0;
 }
 
+#gotostate {padding-top:1px; padding-bottom:1px;}
 /*navbar*/
 
 #navlist{
@@ -571,21 +592,4 @@ td.link a{text-decoration:underline;}
 	font-size:1.5em;
 	
 	}
-
-/*
-.ss-question-list {}
-*/
-
-/*unavailable notice for text on state pages*/
-.unavailable {
-	color:#ccc;
-	}
-
-.unavailable a {
-	color:#ccc;
-	}
-
-.temp-text {color:red;}
-
-
 
